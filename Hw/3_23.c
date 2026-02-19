@@ -1,3 +1,6 @@
+// пункт в
+
+
 #include <stdio.h>
 
 double leakyReLU(double x, double a) {
