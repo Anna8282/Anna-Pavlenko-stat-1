@@ -3,3 +3,6 @@
 *.ipch
 *.wsuo
 *.exe
+*.o
+*.json
+.vscode/
