@@ -1,0 +1,8 @@
+.vs/
+*.VC.db
+*.ipch
+*.wsuo
+*.exe
+*.o
+*.json
+.vscode/
