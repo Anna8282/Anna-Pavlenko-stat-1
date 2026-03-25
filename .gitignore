@@ -1,8 +1,21 @@
+# Visual Studio / VS Code
 .vs/
-*.VC.db
-*.ipch
+.vscode/
+*.slnx
+*.db
+*.sqlite
+*.bin
+*.vsidx
 *.wsuo
+*.ipch/
+
+# Скомпільовані файли та білди
 *.exe
 *.o
+build/
+Debug/
+Release/
+a.out
+
+# Інше сміття
 *.json
-.vscode/
