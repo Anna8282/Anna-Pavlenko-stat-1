@@ -1,69 +1,78 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-int main() {
-    int choice;
-    printf("Оберіть задачу:\n1 - Сума 10-значних чисел\n2 - Матриця (детермінант та ранг)\nВаш вибір: ");
-    scanf("%d", &choice);
+double** create_matrix(int n, int m) {
+    double **matrix = (double **)malloc(n * sizeof(double *));
+    for (int i = 0; i < n; i++) {
+        matrix[i] = (double *)malloc(m * sizeof(double));
+    }
+    return matrix;
+}
 
-    if (choice == 1) {
-        int n;
-        printf("Скільки буде чисел? ");
-        scanf("%d", &n);
+void free_matrix(double **matrix, int n) {
+    for (int i = 0; i < n; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
+}
 
-        unsigned long long sum = 0;
-        unsigned long long current_num;
+void calculate_results(double **a, int n, int m) {
+    int rank = 0;
+    double det = 1.0;
+    
+    if (n != m) det = 0;
 
-        printf("Вводьте цифри (по 10 для кожного числа):\n");
-        for (int i = 0; i < n; i++) {
-            scanf("%10llu", &current_num);
-            sum += current_num;
+    for (int i = 0; i < n && rank < m; i++) {
+        int pivot = i;
+        while (pivot < n && fabs(a[pivot][rank]) < 1e-9) pivot++;
+
+        if (pivot == n) {
+            det = 0; 
+            continue;
         }
-        printf("Результат суми: %llu\n", sum);
 
-    } else if (choice == 2) {
-        int rows, cols;
-        printf("Введіть кількість рядків та стовпців: ");
-        scanf("%d %d", &rows, &cols);
+        double *temp = a[i];
+        a[i] = a[pivot];
+        a[pivot] = temp;
+        if (i != pivot) det = -det;
 
-        double **matrix = (double **)malloc(rows * sizeof(double *));
-        for (int i = 0; i < rows; i++) {
-            matrix[i] = (double *)malloc(cols * sizeof(double));
-        }
+        det *= a[i][rank];
 
-        printf("Заповніть матрицю числами:\n");
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                scanf("%lf", &matrix[i][j]);
+        for (int k = i + 1; k < n; k++) {
+            double factor = a[k][rank] / a[i][rank];
+            for (int j = rank + 1; j < m; j++) {
+                a[k][j] -= factor * a[i][j];
             }
         }
-
-        int rank = 0;
-        for (int i = 0; i < rows && rank < cols; i++) {
-            int pivot = i;
-            while (pivot < rows && matrix[pivot][rank] == 0) pivot++;
-
-            if (pivot < rows) {
-                double *temp = matrix[i];
-                matrix[i] = matrix[pivot];
-                matrix[pivot] = temp;
-
-                for (int k = i + 1; k < rows; k++) {
-                    double factor = matrix[k][rank] / matrix[i][rank];
-                    for (int j = rank; j < cols; j++) {
-                        matrix[k][j] -= factor * matrix[i][j];
-                    }
-                }
-                rank++;
-            }
-        }
-
-        printf("Приблизний ранг матриці: %d\n", rank);
-        printf("(Для детермінанта потрібно, щоб матриця була квадратною)\n");
-
-        for (int i = 0; i < rows; i++) free(matrix[i]);
-        free(matrix);
+        rank++;
     }
 
+    printf("\n--- Результати ---\n");
+    printf("Ранг матриці: %d\n", rank);
+    if (n == m) {
+        printf("Детермінант: %.2f\n", det);
+    } else {
+        printf("Детермінант неможливо обчислити (матриця не квадратна).\n");
+    }
+}
+
+int main() {
+    int n, m;
+    printf("Введіть кількість рядків та стовпців: ");
+    scanf("%d %d", &n, &m);
+
+    double **matrix = create_matrix(n, m);
+
+    printf("Введіть елементи матриці:\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            scanf("%lf", &matrix[i][j]);
+        }
+    }
+
+    calculate_results(matrix, n, m);
+
+    free_matrix(matrix, n);
     return 0;
 }
